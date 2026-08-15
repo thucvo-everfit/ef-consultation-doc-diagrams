@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant FE
+    participant CM as client-management
+    participant CD as consultation-document repo
+    participant DB as MongoDB
+
+    FE->>CM: POST /:id/consultation-documents { documents: [...] }
+    CM->>DB: getClientById + isUserAuthorizedWithClient
+    CM->>CM: validate each document_key belongs to client/team
+    CM->>CM: existing count + new count > cap?
+    alt over cap
+        CM-->>FE: 409 { message }
+    else within cap
+        CM->>CD: insertMany(consultation_document)
+        CM->>DB: findByIdAndUpdate(profile, $push)
+        CM-->>FE: 201 { data: { documents } }
+    end
