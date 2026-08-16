@@ -1,0 +1,13 @@
+sequenceDiagram
+    participant FE
+    participant CM as client-management
+    participant CD as consultation-document repo
+    participant DB as MongoDB
+
+    FE->>CM: DELETE /:id/consultation-documents { document_ids: [...] }
+    CM->>DB: getClientById + isUserAuthorizedWithClient
+    CM->>CD: find({ _id: $in ids, item: client, item_topic })
+    CM->>CM: deleted_ids = what matched, failed_ids = the rest
+    CM->>DB: findByIdAndUpdate(profile, $pull deleted_ids)
+    CM->>CD: deleteMany({ _id: $in deleted_ids, item: client, item_topic })
+    CM-->>FE: 200 { data: { deleted_ids, failed_ids } }
