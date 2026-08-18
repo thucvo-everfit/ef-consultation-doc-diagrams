@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant CM as client-management
+    participant Q as Queue (SNS/SQS)
+    participant W as notification worker
+    participant NS as NotificationService
+    participant DB as MongoDB
+    participant Coach as Any coach of the client
+
+    CM->>Q: publish uploaded/removed { client_id, actor_id, count }
+    Q->>W: consume
+    W->>NS: onConsultationDocumentUploaded / Removed(payload)
+    NS->>NS: getAllTrainerIds(client), take the owner coach
+    NS->>DB: create one Notification (inAppOnly)<br>user = owner coach, relate_user = client
+    Coach->>DB: Updates feed: user in trainer ids, relate_user = client
+    DB-->>Coach: the same single row

@@ -20,5 +20,5 @@ Embed in Confluence with the raw URL:
 `https://raw.githubusercontent.com/thucvo-everfit/ef-diagrams/main/<folder>/<name>.png`
 
 Edit the `.mmd`, re-render, and commit both files together — the PNG is what Confluence shows.
-`d1-system-context.png` and `d4-notification-fanout.png` predate this convention and have no
+`d1-system-context.png` predates this convention and has no
 `.mmd` source yet.
