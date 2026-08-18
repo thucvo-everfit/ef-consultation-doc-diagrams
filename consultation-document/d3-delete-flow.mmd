@@ -5,9 +5,9 @@ sequenceDiagram
     participant DB as MongoDB
 
     FE->>CM: DELETE /:id/consultation-documents { document_ids: [...] }
-    CM->>DB: getClientById + isUserAuthorizedWithClient
+    CM->>DB: getClientForConsultationAccess + isUserAuthorizedWithClient
     CM->>CD: find({ _id: $in ids, item: client, item_topic })
     CM->>CM: deleted_ids = what matched, failed_ids = the rest
-    CM->>DB: findByIdAndUpdate(profile, $pull deleted_ids)
     CM->>CD: deleteMany({ _id: $in deleted_ids, item: client, item_topic })
+    CM->>DB: updateOne(profile, $pull deleted_ids)
     CM-->>FE: 200 { data: { deleted_ids, failed_ids } }

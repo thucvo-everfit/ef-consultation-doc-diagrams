@@ -5,7 +5,7 @@ sequenceDiagram
     participant DB as MongoDB
 
     FE->>CM: POST /:id/consultation-documents { documents: [...] }
-    CM->>DB: getClientById + isUserAuthorizedWithClient
+    CM->>DB: getClientForConsultationAccess + isUserAuthorizedWithClient
     CM->>CM: free slots = cap - existing count
     alt no free slot
         CM-->>FE: 409 { message }
@@ -13,6 +13,6 @@ sequenceDiagram
         CM->>CM: accepted = first N in order, N = min(sent, free slots)
         CM->>CD: any accepted document_key already committed?
         CM->>CD: insertMany(accepted)
-        CM->>DB: findByIdAndUpdate(profile, $push)
-        CM-->>FE: 201 { data: { documents, not_added } }
+        CM->>DB: findOneAndUpdate(profile, $push) guarded on array size
+        CM-->>FE: 201 { data: { documents } }
     end
